@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "http"
+gem "httpx"
 gem "dotenv"
 gem "progressbar"
 gem "pry"

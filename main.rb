@@ -3,7 +3,8 @@
 require "rubygems"
 require "bundler/setup"
 
-require "http"
+require "date"
+require "httpx"
 require "json"
 require "dotenv/load"
 require "progressbar"
@@ -56,7 +57,7 @@ def get_user_id_map(from_cache: true)
   }
   
   cookies = { d: slack_cookie_d }
-  http = HTTP.cookies(cookies)
+  http = HTTPX.plugin(:cookies).with_cookies(cookies)
 
   query_bar = pbar!("Fetching user info from Slack")
   members = []
@@ -64,7 +65,7 @@ def get_user_id_map(from_cache: true)
     query_bar.increment
 
     response = http.post(url, form: params)
-    raise "request failed! #{response.body.to_s}" if !response.status.success?
+    raise "request failed! #{response.error}: #{response.body.to_s}" if response.error
     
     parsed = JSON.parse(response.body.to_s)
     raise "Response was not OK! #{parsed}" if !parsed["ok"]
@@ -116,12 +117,12 @@ def get_emojis(from_cache: true)
   }
   cookies = { d: slack_cookie_d }
 
-  http = HTTP.cookies(cookies)
+  http = HTTPX.plugin(:cookies).with_cookies(cookies)
 
   emojis_bar = pbar!("Fetching emojis from slack")
 
   response = http.post(url, form: params)
-  raise "request failed! #{response.body.to_s}" if !response.status.success?
+  raise "request failed! #{response.error}: #{response.body.to_s}" if response.error
 
   response_body = JSON.parse(response.body.to_s)
   raise "Ok not true! #{response_body}" if !response_body["ok"]
@@ -138,7 +139,7 @@ def get_emojis(from_cache: true)
     params[:page] = page
     
     response = http.post(url, form: params)
-    raise "request failed! #{response.body.to_s}" if !response.status.success?
+    raise "request failed! #{response.error}: #{response.body.to_s}" if response.error
     
     response_body = JSON.parse(response.body.to_s)
     raise "Ok not true! #{response_body}" if !response_body["ok"]

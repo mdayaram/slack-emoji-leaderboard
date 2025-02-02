@@ -216,6 +216,10 @@ def main!
   OptionParser.new do |opt|
     opt.banner = "Usage: ./main.rb [--weeks 1 --top 5]"
 
+    opt.on("--days NUM", "How many days ago to check for emoji uploads. Defaults to all time.") do |o|
+      since = Time.now.to_i - o.to_i * 24 * 60 * 60
+    end
+
     opt.on("--weeks NUM", "How many weeks ago to check for emoji uploads. Defaults to all time.") do |o|
       since = Time.now.to_i - o.to_i * 7 * 24 * 60 * 60
     end

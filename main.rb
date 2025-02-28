@@ -3,6 +3,7 @@
 require "rubygems"
 require "bundler/setup"
 
+require "time"
 require "date"
 require "httpx"
 require "json"
@@ -229,6 +230,10 @@ def main!
 
     opt.on("--years NUM", "How many years ago to check for emoji uploads. Defaults to all time.") do |o|
       since = Time.now.to_i - o.to_i * 365 * 24 * 60 * 60
+    end
+
+    opt.on("--since DATE", "YYYY-MM-DD Emoji uploads since the given date starting at 12am. Default to all time.") do |o|
+      since = Time.parse(o).to_i
     end
 
     opt.on("--top NUM", "Show the top NUM uploaders, defaults to displaying all.") do |o|

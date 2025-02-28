@@ -76,6 +76,7 @@ def get_user_id_map(from_cache: true)
     break if next_cursor.empty?
       
     params = params.merge({ cursor: next_cursor })
+    sleep(0.1) # Avoid hitting the rate limit
   end
   query_bar.finish
 
@@ -147,6 +148,8 @@ def get_emojis(from_cache: true)
     emojis += response_body["emoji"]
 
     response_body["emoji"].size.times { emojis_bar.increment }
+    
+    sleep(0.1) # Avoid hitting the rate limit
   end
 
   noalias_emojis = emojis.reject { |e| e["is_alias"] == 1 }

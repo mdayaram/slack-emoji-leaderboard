@@ -139,8 +139,17 @@ def get_emojis(from_cache: true)
 
   (2..total_pages).each do |page|
     params[:page] = page
-    
-    response = http.post(url, form: params)
+    response = nil
+
+    loop do
+      response = http.post(url, form: params)
+      if response.error && response.code == 429
+        sleep(1)
+      else
+        break
+      end
+    end
+
     raise "request failed! #{response.error}: #{response.body.to_s}" if response.error
     
     response_body = JSON.parse(response.body.to_s)
@@ -149,8 +158,6 @@ def get_emojis(from_cache: true)
     emojis += response_body["emoji"]
 
     response_body["emoji"].size.times { emojis_bar.increment }
-    
-    sleep(0.1) # Avoid hitting the rate limit
   end
 
   noalias_emojis = emojis.reject { |e| e["is_alias"] == 1 }

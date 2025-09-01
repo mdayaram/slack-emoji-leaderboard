@@ -200,10 +200,19 @@ def leaderboard_stats(emojis, top_num = nil, since = 0)
   count_by_person = by_person.map { |k, v| [k, v.size] }.sort_by { |a| - a.last }.first(top_num)
 
   message = ""
-  count_by_person.each.with_index do |v, i|
+  current_rank = 1
+  previous_count = nil
+
+  count_by_person.each do |v|
     user = v[0]
     count = v[1]
-    message += "#{i+1}) @#{user}: #{count}\n"
+
+    if previous_count && count != previous_count
+      current_rank += 1
+    end
+
+    message += "#{current_rank}) @#{user}: #{count}\n"
+    previous_count = count
   end
   log(message)
 

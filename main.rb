@@ -124,7 +124,7 @@ def get_emojis(from_cache: true)
   emojis_bar = pbar!("Fetching emojis from slack")
 
   response = http.post(url, form: params)
-  raise "request failed! #{response.error}: #{response.body.to_s}" if response.error
+  raise "request failed! #{response.error}" if response.error
 
   response_body = JSON.parse(response.body.to_s)
   raise "Ok not true! #{response_body}" if !response_body["ok"]

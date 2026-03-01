@@ -197,7 +197,13 @@ def leaderboard_stats(emojis, top_num = nil, since = 0)
   log("Showing #{top_num.nil? ? "all" : "the top " + top_num.to_s} emoji uploaders since #{Time.at(since)}:\n\n")
 
   top_num ||= by_person.size
-  count_by_person = by_person.map { |k, v| [k, v.size] }.sort_by { |a| - a.last }.first(top_num)
+  count_by_person = by_person.map { |k, v| [k, v.size] }.sort_by { |a| -a.last }
+
+  distinct_counts = count_by_person.map(&:last).uniq
+  if top_num < distinct_counts.size
+    cutoff_count = distinct_counts[top_num - 1]
+    count_by_person = count_by_person.select { |a| a.last >= cutoff_count }
+  end
 
   message = ""
   current_rank = 1
